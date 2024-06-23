@@ -152,6 +152,8 @@ typedef void (^YTPlaybackQualityCompletionHandler)(YTPlaybackQuality result,
  */
 @interface YTPlayerView : UIView
 
+- (void)setSponsorSegments:(NSArray *)segments;
+
 @property(nonatomic, nullable, readonly) WKWebView *webView;
 
 /** A delegate to be notified on playback events. */
