@@ -1,25 +1,10 @@
-<!--
-     Copyright 2014 Google Inc. All rights reserved.
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-    body { margin: 0; width:100%%; height:100%%;  background-color:#000000; }
-    html { width:100%%; height:100%%; background-color:#000000; }
+    body { margin: 0; width:100%; height:100%;  background-color:#000000; }
+    html { width:100%; height:100%; background-color:#000000; }
 
     .embed-container iframe,
     .embed-container object,
@@ -27,18 +12,20 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%% !important;
-        height: 100%% !important;
+        width: 100% !important;
+        height: 100% !important;
     }
     </style>
 </head>
 <body>
     <div class="embed-container">
         <div id="player"></div>
+        <div id="sponsorSegmentsContainer"></div>
     </div>
     <script src="https://www.youtube.com/iframe_api" onerror="window.location.href='ytplayer://onYouTubeIframeAPIFailedToLoad'"></script>
     <script>
     var player;
+    var sponsorSegments = [];
     var error = false;
 
     YT.ready(function() {
@@ -46,7 +33,6 @@
         player.setSize(window.innerWidth, window.innerHeight);
         window.location.href = 'ytplayer://onYouTubeIframeAPIReady';
 
-        // this will transmit playTime frequently while playng
         function getCurrentTime() {
              var state = player.getPlayerState();
              if (state == YT.PlayerState.PLAYING) {
@@ -82,10 +68,33 @@
         }
         window.location.href = 'ytplayer://onError?data=' + event.data;
     }
-    
+
     window.onresize = function() {
         player.setSize(window.innerWidth, window.innerHeight);
     }
+
+    function updateSponsorSegments(segments) {
+        sponsorSegments = JSON.parse(segments);
+        var container = document.getElementById('sponsorSegmentsContainer');
+        container.innerHTML = ''; // Clear existing segments
+
+        sponsorSegments.forEach(function(segment) {
+            var start = segment.segment[0];
+            var end = segment.segment[1];
+            var duration = end - start;
+            var totalDuration = player.getDuration();
+
+            var segmentDiv = document.createElement('div');
+            segmentDiv.style.position = 'absolute';
+            segmentDiv.style.left = (start / totalDuration * 100) + '%';
+            segmentDiv.style.width = (duration / totalDuration * 100) + '%';
+            segmentDiv.style.height = '5px';
+            segmentDiv.style.backgroundColor = 'red';
+
+            container.appendChild(segmentDiv);
+        });
+    }
+
     </script>
 </body>
 </html>
