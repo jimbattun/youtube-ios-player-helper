@@ -101,6 +101,28 @@ NSString static *const kYTPlayerSyndicationRegexPattern = @"^https://tpc.googles
   return [self loadWithPlayerParams:playerParams];
 }
 
+- (void)setSponsorSegments:(NSArray *)segments {
+  // Сохраните спонсорские сегменты в свойстве (например, _sponsorSegments)
+  self.sponsorSegments = segments;
+
+  // Обновите плеер для отображения спонсорских сегментов на таймлайне
+  [self updateSponsorSegments];
+}
+
+- (void)updateSponsorSegments {
+  // Реализуйте логику для отображения спонсорских сегментов на таймлайне
+  // Например, добавьте визуальные метки на таймлайн плеера
+  NSString *segmentsJSON = [self jsonStringFromSegments:self.sponsorSegments];
+  NSString *command = [NSString stringWithFormat:@"player.updateSponsorSegments(%@);", segmentsJSON];
+  [self evaluateJavaScript:command];
+}
+
+- (NSString *)jsonStringFromSegments:(NSArray *)segments {
+  NSError *error;
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:segments options:0 error:&error];
+  return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+}
+
 #pragma mark - Player methods
 
 - (void)playVideo {
